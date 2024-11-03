@@ -20,7 +20,7 @@ def sample_meal2():
 
 @pytest.fixture()
 def sample_meal3():
-    return Meal(3, 'Meal 3', 'Cuisine 3', 120, 'Difficulty 3')
+    return Meal(3, 'Meal 3', 'Cuisine 3', 120, 'HIGH')
 
 @pytest.fixture()
 def sample_combatants(sample_meal1, sample_meal2):
@@ -38,7 +38,6 @@ def test_battle(battle_model, sample_meal1, sample_combatants):
     battle_model.combatants = sample_combatants
     battle_result = battle_model.battle()
 
-    assert type(battle_result) == string, ""
     assert battle_result == 'Meal 2', "Expected meal 2 to win due to higher prices"
 
     "Check combatants to see if loser was removed"
