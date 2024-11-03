@@ -57,7 +57,7 @@ def test_clear_combatants(battle_model, sample_combatants):
     battle_model.clear_combatants()
     assert len(battle_model.combatants) == 0, f"Combatants should be empty after clearing"
 
-def test_clear_empty_combatants(battle_model):
+def test_clear_empty_combatants(battle_model, caplog):
     battle_model.clear_combatants()
     assert len(battle_model.combatants) == 0, "Expected 0 Meals to be in empty list"
     assert "Clearing empty combatants" in caplog.text, "Expected warning message when clearing empty combatants list"
@@ -110,13 +110,13 @@ def test_prep_combatant(battle_model, sample_meal1, sample_meal2):
     assert len(battle_model.combatants) == 2, "Expected another combatant to be added to list"
     assert battle_model.combatants[1].meal == 'Meal 2', """Second meal should be appended to end of list"""
 
-def test_prep_combatant_limit(battle_model, sample_combatants, sample_meal3):
+def test_prep_combatant_limit(battle_model, sample_combatants, sample_meal3, caplog):
     """Test prepping too many combatants"""
     battle_model.combatants = sample_combatants
     with pytest.raises(ValueError, match="Combatant list is full, cannot add more combatants."):
         battle_model.prep_combatant(sample_meal3)
 
-def test_prep_combatant_duplicate(battle_model, sample_meal1):
+def test_prep_combatant_duplicate(battle_model, sample_meal1, caplog):
     battle_model.combatants = [sample_meal1]
     battle_model.prep_combatant(sample_meal1)
 
