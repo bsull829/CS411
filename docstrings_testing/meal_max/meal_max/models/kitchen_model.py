@@ -28,12 +28,11 @@ class Meal:
     """
 
     id: int
-    cusine: str
+    meal: str
+    cuisine: str
     price: float
     difficulty: str
-    meal: str
-    id: int
-
+    
     def __post_init__(self):
         """
         Validates the price and difficulty attributes after the Meal object's initialization.
