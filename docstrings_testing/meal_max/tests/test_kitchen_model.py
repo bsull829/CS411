@@ -1,19 +1,11 @@
 # Based on and modified from playlist.tests.test_song_model. 
-
+from contextlib import contextmanager
 import re
 import sqlite3
 
 import pytest
 
-from meal_max.models.kitchen_model import (
-    Meal,
-    create_meal,
-    delete_meal,
-    get_leaderboard,
-    get_meal_by_id,
-    get_meal_by_name,
-    update_meal_stats
-)
+from meal_max.models.kitchen_model import Meal
 
 ######################################################
 #
@@ -29,21 +21,20 @@ def normalize_whitespace(sql_query: str) -> str:
 def mock_cursor(mocker):
     mock_conn = mocker.Mock()
     mock_cursor = mocker.Mock()
-
+    
     # Mock the connection's cursor
     mock_conn.cursor.return_value = mock_cursor
-    mock_cursor.fetchone.return_value = None  # Default return for queries
+    mock_cursor.fetchone.return_value = None # Default return for queries
     mock_cursor.fetchall.return_value = []
     mock_conn.commit.return_value = None
-
+    
     # Mock the get_db_connection context manager from sql_utils
     @contextmanager
-    def mock_get_db_connection():
-        yield mock_conn  # Yield the mocked connection object
-
-    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
-
-    return mock_cursor  # Return the mock cursor so we can set expectations per test
+    def mock_get_deb_connection():
+        yield mock_conn # Yield the mocked connection object
+        
+    return mock_conn # Yield the mock connection object 
+    
 
 ######################################################
 #
@@ -111,14 +102,17 @@ def test_get_meal_by_id_bad_name(mock_cursor):
 def test_update_meal_stats(mock_cursor):
     """Test updating the battle count and win count of a song."""
     # look into if one function is sufficient for updating battle count AND win count!!
+    pass
     
 ### Test for Updating a Deleted Meal:
 def test_update_meal_stats_deleted_meal(mock_cursor):
     """Test error when trying to battle count and win count for a deleted meal."""
+    pass
     
 def test_update_meal_stats_bad_result(mock_cursor):
     """Test error when trying to update meal stats with an invalid result, something that is not 'win' or 'loss'."""
     # something like this wasn't present in song model's test but it makes sense to add this 
+    pass 
     
 
     
