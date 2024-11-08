@@ -2,8 +2,8 @@
 from contextlib import contextmanager
 import re
 import sqlite3
-"b"
 import pytest
+import os
 
 from meal_max.models.kitchen_model import (
     Meal,
@@ -12,7 +12,8 @@ from meal_max.models.kitchen_model import (
     get_leaderboard,
     get_meal_by_id,
     get_meal_by_name,
-    update_meal_stats
+    update_meal_stats,
+    clear_meals
 )
 
 ######################################################
@@ -232,6 +233,22 @@ def test_get_leaderboard_invalid_sort_by(mock_cursor):
     # Attempt to get leaderboard with a sort_by that's a non-string value 
     with pytest.raises(ValueError, match="Invalid sort_by parameter: 4"):
         get_leaderboard(4)
+
+def test_clear_meals(mock_cursor, mocker):
+    """Test clearing the entire meals table (removes all meals)."""
+
+    # Mock the file reading
+    mocker.patch.dict('os.environ', {'SQL_CREATE_TABLE_PATH': 'sql/create_meal_table.sql'})
+    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data="The body of the create statement"))
+
+    # Call the clear_database function
+    clear_meals()
+
+    # Ensure the file was opened using the environment variable's path
+    mock_open.assert_called_once_with('sql/create_meal_table.sql', 'r')
+
+    # Verify that the correct SQL script was executed
+    mock_cursor.executescript.assert_called_once()
 
 ######################################################
 #
