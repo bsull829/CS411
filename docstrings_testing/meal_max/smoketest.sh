@@ -74,7 +74,7 @@ delete_meal() {
 
   echo "Deleting meal by ID ($meal_id)..."
   response=$(curl -s -X DELETE "$BASE_URL/delete-meal/$meal_id")
-  if echo "$response" | grep -q '"status": "meal deleted"'; then
+  if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal deleted successfully by ID ($song_id)."
   else
     echo "Failed to delete meal by ID ($song_id)."
@@ -120,10 +120,26 @@ clear_combatants() {
   echo "Clearing combatants..."
   response=$(curl -s -X POST "$BASE_URL/clear-combatants")
 
-  if echo "$response" | grep -q '"status": "combatants cleared"'; then
+  if echo "$response" | grep -q '"status": "success"'; then
     echo "Combatants cleared successfully."
   else
     echo "Failed to clear combatants."
+    exit 1
+  fi
+}
+
+clear_meals() {
+  echo "Clearing all meals..."
+  response=$(curl -s -X DELETE "$BASE_URL/clear-meals")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "All meals removed successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Song JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to remove all meals."
     exit 1
   fi
 }
@@ -138,7 +154,7 @@ battle() {
   echo "Playing current song..."
   response=$(curl -s -X GET "$BASE_URL/battle")
 
-  if echo "$response" | grep -q '"status": "battle complete"'; then
+  if echo "$response" | grep -q '"status": "success"'; then
     echo "Battle has concluded"
     if [ "$ECHO_JSON" = true ]; then
       echo "Winner JSON:"
@@ -165,7 +181,6 @@ get_combatants() {
   fi
 }
 
-
 prep_combatant() {
   meal=$1
 
@@ -174,7 +189,7 @@ prep_combatant() {
     -H "Content-Type: application/json" \
     -d "{\"meal\":\"$meal\"}") 
 
-  if echo "$response" | grep -q '"status": "combatant prepared"'; then
+  if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal prepped successfully."
     if [ "$ECHO_JSON" = true ]; then
       echo "Meal JSON:"
@@ -213,7 +228,7 @@ check_health
 check_db
 
 # Create meals
-clear_combatants
+clear_meals
 
 create_meal "Burger" "American" 110 "LOW"
 create_meal "Tiramisu" "Italian" 30 "HIGH"

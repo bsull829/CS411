@@ -1,2 +1,8 @@
+<<<<<<< HEAD
 __pycache__/
 *.pyc
+=======
+#Creating to facilitate merges and pulls
+
+meal_max/meal_max_venv/
+>>>>>>> 2c98214 (Adding gitignore)
