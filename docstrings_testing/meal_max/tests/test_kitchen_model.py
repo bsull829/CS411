@@ -186,9 +186,7 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
     # Ensure the SQL query was executed correctly
     expected_query = normalize_whitespace("""
         SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct
-        FROM meals WHERE deleted = false AND battles > 0
-        WHERE deleted = FALSE
-        ORDER BY play_count DESC ORDER BY wins DESC
+        FROM meals WHERE deleted = false AND battles > 0 ORDER BY wins DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
@@ -219,9 +217,7 @@ def test_get_leaderboard_sort_by_win_pct(mock_cursor):
     # Ensure the SQL query was executed correctly
     expected_query = normalize_whitespace("""
         SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct
-        FROM meals WHERE deleted = false AND battles > 0
-        WHERE deleted = FALSE
-        ORDER BY play_count DESC ORDER BY win_pct DESC
+        FROM meals WHERE deleted = false AND battles > 0 ORDER BY win_pct DESC
     """)
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
@@ -282,10 +278,10 @@ def test_get_meal_by_id_already_deleted(mock_cursor):
     """Test error when trying to delete a meal by id that's already marked as deleted."""
     
     # Simulate that the meal exists but is already marked as deleted
-    mock_cursor.fetchone.return_value = ([True])
+    mock_cursor.fetchone.return_value = (999, "Meal Name", "Cuisine Name", 18.0, "LOW", True)
 
     # Expect a ValueError when attempting to delete a meal that's already been deleted
-    with pytest.raises(ValueError, match="Meal with ID 999 has already been deleted"):
+    with pytest.raises(ValueError, match="Meal with ID 999 has been deleted"):
         get_meal_by_id(999)
     
 
@@ -329,10 +325,10 @@ def test_get_meal_by_name_already_deleted(mock_cursor):
     """Test error when trying to delete a meal by name that's already marked as deleted."""
     
     # Simulate that the meal exists but is already marked as deleted
-    mock_cursor.fetchone.return_value = ([True])
+    mock_cursor.fetchone.return_value = (999, "Lunch", "Cuisine Name", 18.0, "LOW", True)
 
     # Expect a ValueError when attempting to delete a meal that's already been deleted
-    with pytest.raises(ValueError, match="Meal with name 'Lunch' has already been deleted"):
+    with pytest.raises(ValueError, match="Meal with name Lunch has been deleted"):
         get_meal_by_name("Lunch")
 
 def test_update_meal_stats_result_win(mock_cursor):
@@ -369,14 +365,12 @@ def test_update_meal_stats_result_loss(mock_cursor):
     # Simulate that the meal exists and is not deleted (id = 1)
     mock_cursor.fetchone.return_value = [False]
 
-    # Call the update_meal_stats function with the "win" result 
+    # Call the update_meal_stats function with the "loss" result 
     meal_id = 1
-    update_meal_stats(meal_id, "win")
+    update_meal_stats(meal_id, "loss")
     
     # Normalize the expected SQL query
-    expected_query = normalize_whitespace("""
-        UPDATE meals SET battles = battles + 1 WHERE id = ?
-    """)
+    expected_query = normalize_whitespace("""UPDATE meals SET battles = battles + 1 WHERE id = ?""")
 
     # Ensure the SQL query was executed correctly
     actual_query = normalize_whitespace(mock_cursor.execute.call_args_list[1][0][0])
