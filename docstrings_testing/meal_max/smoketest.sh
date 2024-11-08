@@ -195,7 +195,7 @@ prep_combatant() {
 # Function to get the overall leaderboard of all meals sorted by combat wins
 get_meal_leaderboard() {
   echo "Getting meal leaderboard sorted by win count..."
-  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=win_count")
+  response=$(curl -s -X GET "$BASE_URL/leaderboard?sort=wins")
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Meal leaderboard retrieved successfully."
     if [ "$ECHO_JSON" = true ]; then
@@ -215,17 +215,18 @@ check_db
 # Create meals
 clear_combatants
 
-create_meal "Sushi" "Japanese" 110 "HIGH"
-create_meal "Pasta" "Italian" 30 "LOW"
+create_meal "Burger" "American" 110 "LOW"
+create_meal "Tiramisu" "Italian" 30 "HIGH"
 create_meal "Bibimbap" "Korean" 45 "MED"
 
 get_combatants
 
-get_meal_by_id 2
+get_meal_by_id 3
 
 get_meal_by_name "Bibimbap"
-prep_combatant "Sushi"
-prep_combatant "Pasta"
+
+prep_combatant "Burger"
+prep_combatant "Tiramisu"
 get_combatants
 
 battle  
@@ -237,6 +238,8 @@ create_meal "Beef Bourguignon" "French" 77 "LOW"
 
 prep_combatant "Beef Bourguignon"
 prep_combatant "Bibimbap" 
+
+delete_meal 4
 
 battle
 
