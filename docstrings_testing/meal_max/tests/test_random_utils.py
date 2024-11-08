@@ -4,10 +4,10 @@ import requests
 from meal_max.utils.random_utils import get_random
 
 "Random number to test against"
-RANDOM_NUMB = 29
+RANDOM_NUMB = 0.99
 
 @pytest.fixture
-def mock(mocker):
+def mock_random_org(mocker):
     #Patch the requests.get call
     # requests.get returns an object, which we have replaced with a mock object
     mock_response = mocker.Mock()
@@ -21,21 +21,21 @@ def test_get_random(mock_random_org):
 
     result = get_random()
 
-    assert result == f"Expected {RANDOM_NUMB} but got {result} instead"
+    assert result == RANDOM_NUMB, f"Expected {RANDOM_NUMB} but got {result} instead"
 
     """Ensure that correct URL is used to fetch result"""
     requests.get.assert_called_once_with("https://www.random.org/decimal-fractions/?num=1&dec=2&col=1&format=plain&rnd=new", timeout=5)
 
-def test_get_random_timeout(mock):
+def test_get_random_timeout(mocker):
     """Simulate a request timeout"""
-    mock.patch("requests.get", side_effect=requests.exceptions.Timeout)
+    mocker.patch("requests.get", side_effect=requests.exceptions.Timeout)
 
     with pytest.raises(RuntimeError, match="Request to random.org timed out."):
         get_random()
 
-def test_get_random_fail(mock): 
+def test_get_random_fail(mocker): 
     """Simulate a request failure to URL"""
-    mock.patch("requests.get", side_effect=requests.exceptions.RequestException("Connection error"))
+    mocker.patch("requests.get", side_effect=requests.exceptions.RequestException("Connection error"))
 
     with pytest.raises(RuntimeError, match="Request to random.org failed: Connection error"):
         get_random()
