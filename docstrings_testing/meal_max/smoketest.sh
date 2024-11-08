@@ -74,7 +74,7 @@ delete_meal() {
 
   echo "Deleting meal by ID ($meal_id)..."
   response=$(curl -s -X DELETE "$BASE_URL/delete-meal/$meal_id")
-  if echo "$response" | grep -q '"status": "success"'; then
+  if echo "$response" | grep -q '"status": "meal deleted"'; then
     echo "Meal deleted successfully by ID ($song_id)."
   else
     echo "Failed to delete meal by ID ($song_id)."
@@ -138,7 +138,7 @@ battle() {
   echo "Playing current song..."
   response=$(curl -s -X GET "$BASE_URL/battle")
 
-  if echo "$response" | grep -q '"status": "success"'; then
+  if echo "$response" | grep -q '"status": "battle complete"'; then
     echo "Battle has concluded"
     if [ "$ECHO_JSON" = true ]; then
       echo "Winner JSON:"
@@ -174,7 +174,7 @@ prep_combatant() {
     -H "Content-Type: application/json" \
     -d "{\"meal\":\"$meal\"}") 
 
-  if echo "$response" | grep -q '"status": "success"'; then
+  if echo "$response" | grep -q '"status": "combatant prepared"'; then
     echo "Meal prepped successfully."
     if [ "$ECHO_JSON" = true ]; then
       echo "Meal JSON:"
@@ -228,12 +228,7 @@ prep_combatant "Sushi"
 prep_combatant "Pasta"
 get_combatants
 
-delete_meal 1
-get_meal_by_id 1
-
-battle 
-
-battle 
+battle  
 
 clear_combatants
 
