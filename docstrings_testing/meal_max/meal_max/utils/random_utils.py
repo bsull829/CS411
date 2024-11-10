@@ -9,10 +9,10 @@ configure_logger(logger)
 
 def get_random() -> float:
     """
-    Fetches a random number to 3 decimal places from random.org
+    Fetches a random number to 2 decimal places between 0 and 1 from random.org
 
     Returns:
-        float: The random number fetched from random.org, to 3 decimal places
+        float: The random number fetched from random.org, to 2 decimal places
 
     Raises: 
         ValueError: If request to random.org returns an invalid response
