@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Define the base URL for the Flask API
-BASE_URL="http://localhost:5001/api"
+BASE_URL="http://localhost:5000/api"
 
 # Flag to control whether to echo JSON output
-ECHO_JSON=false
+ECHO_JSON=true
 
 # Parse command-line arguments
 while [ "$#" -gt 0 ]; do
@@ -61,7 +61,7 @@ create_meal() {
   curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
     -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}" |  grep -q '"status": "success"'
 
-  if [ $? -eq 1 ]; then
+  if [ $? -eq 0 ]; then
     echo "Meal added successfully."
   else
     echo "Failed to add meal."
@@ -116,18 +116,6 @@ get_meal_by_name() {
   fi
 }
 
-clear_combatants() {
-  echo "Clearing combatants..."
-  response=$(curl -s -X POST "$BASE_URL/clear-combatants")
-
-  if echo "$response" | grep -q '"status": "success"'; then
-    echo "Combatants cleared successfully."
-  else
-    echo "Failed to clear combatants."
-    exit 1
-  fi
-}
-
 clear_meals() {
   echo "Clearing all meals..."
   response=$(curl -s -X DELETE "$BASE_URL/clear-meals")
@@ -135,7 +123,7 @@ clear_meals() {
   if echo "$response" | grep -q '"status": "success"'; then
     echo "All meals removed successfully."
     if [ "$ECHO_JSON" = true ]; then
-      echo "Song JSON:"
+      echo "Kitchen JSON:"
       echo "$response" | jq .
     fi
   else
@@ -201,6 +189,18 @@ prep_combatant() {
   fi
 }
 
+clear_combatants() {
+  echo "Clearing combatants..."
+  response=$(curl -s -X POST "$BASE_URL/clear-combatants")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Combatants cleared successfully."
+  else
+    echo "Failed to clear combatants."
+    exit 1
+  fi
+}
+
 ######################################################
 #
 # Leaderboard
@@ -259,4 +259,6 @@ delete_meal 4
 battle
 
 get_meal_leaderboard
+
+echo "All tests passed successfully!"
 

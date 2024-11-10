@@ -16,6 +16,10 @@ app = Flask(__name__)
 # uncomment this
 # CORS(app)
 
+print("Available routes:")
+for rule in app.url_map.iter_rules():
+    print(rule)
+
 # Initialize the BattleModel
 battle_model = BattleModel()
 
