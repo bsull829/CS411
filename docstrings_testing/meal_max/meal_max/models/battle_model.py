@@ -131,7 +131,7 @@ class BattleModel:
         Retrieves all the individual Meals listed as combatants and potential battle entrants
 
         Returns: 
-            list[Meal]: A list of Meal objects that are classified as combatants in the system
+            List[Meal]: A list of Meal objects that are classified as combatants in the system
 
         """
 
