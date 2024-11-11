@@ -16,6 +16,10 @@ app = Flask(__name__)
 # uncomment this
 # CORS(app)
 
+print("Available routes:")
+for rule in app.url_map.iter_rules():
+    print(rule)
+
 # Initialize the BattleModel
 battle_model = BattleModel()
 
@@ -110,9 +114,25 @@ def add_meal() -> Response:
         kitchen_model.create_meal(meal, cuisine, price, difficulty)
 
         app.logger.info("Combatant added: %s", meal)
-        return make_response(jsonify({'status': 'combatant added', 'combatant': meal}), 201)
+        return make_response(jsonify({'status': 'success', 'combatant': meal}), 201)
     except Exception as e:
         app.logger.error("Failed to add combatant: %s", str(e))
+        return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/api/clear-meals', methods=['DELETE'])
+def clear_catalog() -> Response:
+    """
+    Route to clear all meals (recreates the table).
+
+    Returns:
+        JSON response indicating success of the operation or error message.
+    """
+    try:
+        app.logger.info("Clearing the meals")
+        kitchen_model.clear_meals()
+        return make_response(jsonify({'status': 'success'}), 200)
+    except Exception as e:
+        app.logger.error(f"Error clearing catalog: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/api/delete-meal/<int:meal_id>', methods=['DELETE'])
@@ -130,7 +150,7 @@ def delete_meal(meal_id: int) -> Response:
         app.logger.info(f"Deleting meal by ID: {meal_id}")
 
         kitchen_model.delete_meal(meal_id)
-        return make_response(jsonify({'status': 'meal deleted'}), 200)
+        return make_response(jsonify({'status': 'success'}), 200)
     except Exception as e:
         app.logger.error(f"Error deleting meal: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
@@ -201,7 +221,7 @@ def battle() -> Response:
 
         winner = battle_model.battle()
 
-        return make_response(jsonify({'status': 'battle complete', 'winner': winner}), 200)
+        return make_response(jsonify({'status': 'success', 'winner': winner}), 200)
     except Exception as e:
         app.logger.error(f"Battle error: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
@@ -220,7 +240,7 @@ def clear_combatants() -> Response:
         app.logger.info('Clearing all combatants...')
         battle_model.clear_combatants()
         app.logger.info('Combatants cleared.')
-        return make_response(jsonify({'status': 'combatants cleared'}), 200)
+        return make_response(jsonify({'status': 'success'}), 200)
     except Exception as e:
         app.logger.error("Failed to clear combatants: %s", str(e))
         return make_response(jsonify({'error': str(e)}), 500)
@@ -269,7 +289,7 @@ def prep_combatant() -> Response:
         except Exception as e:
             app.logger.error("Failed to prepare combatant: %s", str(e))
             return make_response(jsonify({'error': str(e)}), 500)
-        return make_response(jsonify({'status': 'combatant prepared', 'combatants': combatants}), 200)
+        return make_response(jsonify({'status': 'success', 'combatants': combatants}), 200)
 
     except Exception as e:
         app.logger.error("Failed to prepare combatants: %s", str(e))
@@ -306,7 +326,6 @@ def get_leaderboard() -> Response:
     except Exception as e:
         app.logger.error(f"Error generating leaderboard: {e}")
         return make_response(jsonify({'error': str(e)}), 500)
-
 
 
 if __name__ == '__main__':
